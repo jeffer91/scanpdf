@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+  <title>ScanPDF</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-symbol">S</div><div><strong>ScanPDF</strong><small>Auditor documental</small></div></div>
+      <div class="menu-selected"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> Análisis</div>
+      <div class="sidebar-foot"><div class="offline-dot"></div><span>Procesamiento local</span></div>
+    </aside>
+    <main class="main">
+      <header class="page-head"><div><div class="eyebrow">DOCUMENTOS</div><h1>Auditoría de PDF</h1><p>Revisa nombres, fechas y firmas sin modificar tus archivos.</p></div><button id="exportBtn" class="btn btn-outline" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg> Exportar Excel</button></header>
+      <section class="picker">
+        <div class="folder-glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3V7Z"/></svg></div>
+        <div class="folder-text"><strong>Carpeta de documentos</strong><p id="folderLabel">Selecciona una carpeta con archivos PDF</p></div>
+        <button class="btn btn-soft" id="pickBtn">Seleccionar</button>
+        <button class="btn btn-primary" id="startBtn" disabled>Analizar carpeta</button>
+        <button class="btn btn-danger hidden" id="stopBtn">Detener</button>
+      </section>
+      <div class="progress-wrap hidden" id="progressWrap"><div class="progress-copy"><strong id="progressLabel">Analizando documentos…</strong><span id="progressCount">0 / 0</span></div><div class="track"><div id="progressBar" class="track-fill"></div></div><div id="progressFile" class="progress-file"></div></div>
+      <section class="stats">
+        <div class="stat"><span>Documentos</span><strong id="countTotal">0</strong><small>PDF encontrados</small></div>
+        <div class="stat"><span>Correctos</span><strong id="countOk">0</strong><small>Sin incidencias identificadas</small></div>
+        <div class="stat"><span>Por revisar</span><strong id="countReview">0</strong><small>Validaciones pendientes</small></div>
+        <div class="stat"><span>Incidencias</span><strong id="countErrors">0</strong><small>Errores de lectura o firma</small></div>
+      </section>
+      <section class="data-panel">
+        <div class="data-title"><div><h2>Resultados</h2><p id="subTitle">Aquí aparecerán los documentos analizados.</p></div><div class="filters"><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg><input type="search" id="searchInput" placeholder="Buscar docente o archivo" aria-label="Buscar docente o archivo"></label><select id="statusFilter" aria-label="Filtrar resultados"><option value="">Todos</option><option value="Correcto">Correctos</option><option value="Revisar">Por revisar</option><option value="Incidencia">Incidencias</option><option value="Error">Errores</option></select></div></div>
+        <div class="table-scroll"><table><thead><tr><th>Docente / archivo</th><th>Fecha documento</th><th>Tipo</th><th>Firma digital</th><th>Resultado</th><th></th></tr></thead><tbody id="resultsBody"><tr><td colspan="6"><div class="empty"><div class="empty-icon">▤</div><strong>Tu análisis empieza aquí</strong><span>Selecciona una carpeta y pulsa «Analizar carpeta».</span></div></td></tr></tbody></table></div>
+        <div class="table-footer"><span id="showCount">0 documentos</span><span>Los originales no se modifican</span></div>
+      </section>
+      <div class="toast hidden" id="toast" role="status"></div>
+    </main>
+  </div>
+  <div id="overlay" class="overlay hidden"><section class="details" role="dialog" aria-modal="true" aria-labelledby="detailsTitle"><header><div><span class="eyebrow">DETALLE DEL DOCUMENTO</span><h2 id="detailsTitle">Documento</h2></div><button class="icon-button" id="closeDetails" aria-label="Cerrar">×</button></header><div id="detailsContent" class="details-content"></div><footer><button class="btn btn-outline" id="openPdfBtn">Abrir PDF original</button><button class="btn btn-primary" id="closeDetailsBottom">Cerrar</button></footer></section></div>
+  <script src="app.js"></script>
+</body>
+</html>

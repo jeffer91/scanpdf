@@ -1,0 +1,7 @@
+PyMuPDF>=1.24,<1.29
+pyHanko>=0.30,<0.39
+rapidocr>=3.4,<4
+onnxruntime>=1.19,<2
+numpy>=1.26,<3
+XlsxWriter>=3.2,<4
+pyinstaller>=6.10,<7

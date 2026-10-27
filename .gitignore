@@ -1,0 +1,10 @@
+node_modules/
+release/
+dist-engine/
+build/
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+*.spec
+.DS_Store

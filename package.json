@@ -1,0 +1,33 @@
+{
+  "name": "scanpdf",
+  "version": "1.0.0",
+  "description": "Auditoría local de PDF, OCR y firmas electrónicas",
+  "main": "main.js",
+  "author": "ScanPDF",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build:win": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^38.1.2",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "ec.scanpdf.desktop",
+    "productName": "ScanPDF",
+    "directories": { "output": "release" },
+    "files": ["main.js", "preload.js", "renderer/**/*", "package.json"],
+    "extraResources": [
+      { "from": "dist-engine/scanpdf-engine.exe", "to": "bin/scanpdf-engine.exe" }
+    ],
+    "win": { "target": [{ "target": "nsis", "arch": ["x64"] }] },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "ScanPDF"
+    }
+  }
+}
