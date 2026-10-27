@@ -255,6 +255,25 @@ def inspect_file(path: Path) -> dict:
                                  for f in row['firmas'] if f['firmante'])
             if not signer_matches:
                 row['observaciones'].append('Ningún firmante identificado coincide claramente con el nombre del docente (podría ser una autoridad)')
+        # Compare signing dates with the document date; a date stated by the signer
+        # is not a trusted timestamp, so keep this distinction visible in the audit.
+        for sig in row['firmas']:
+            label = f'Firma {sig.get("numero", "?")}'
+            reported = sig.get('fecha_reportada') or ''
+            if not reported:
+                row['observaciones'].append(f'{label}: no se encontró fecha de firma declarada')
+                continue
+            try:
+                signed_date = dt.datetime.fromisoformat(reported.replace('Z', '+00:00')).date()
+            except (ValueError, TypeError):
+                row['observaciones'].append(f'{label}: fecha de firma no interpretable ({reported})')
+                continue
+            if row['fecha_documento'] and signed_date < dt.date.fromisoformat(row['fecha_documento']):
+                row['observaciones'].append(
+                    f'{label}: la firma declarada ({signed_date.isoformat()}) es anterior a la fecha del documento ({row["fecha_documento"]})'
+                )
+            if sig.get('sello_tiempo') != 'Confiable':
+                row['observaciones'].append(f'{label}: fecha declarada sin sello de tiempo confiable verificado')
         row['estado'] = ('Correcto' if row['firma'] == 'Válida' and row['nombre_coincide'] == 'Coincide'
                          and row['fecha_documento'] and not row['observaciones'] else
                          'Incidencia' if row['firma'] == 'Inválida' else 'Revisar')

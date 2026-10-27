@@ -82,3 +82,29 @@ def test_xlsx_escaping_and_sheets(tmp_path):
         workbook = z.read('xl/workbook.xml').decode()
         assert all(s in workbook for s in ['Documentos', 'Firmas', 'Incidencias'])
         assert '=2+3.pdf' in z.read('xl/sharedStrings.xml').decode()
+
+def test_signature_date_prior_to_document_is_reviewed(tmp_path, monkeypatch):
+    name = 'UGPA-RGI1-01-PRO-251-2026-07-Danny Patricio Bermeo Ochoa.pdf'
+    path = tmp_path / name
+    _pdf(path, 'Docente: Danny Patricio Bermeo Ochoa\nFecha de elaboracion: 05/08/2026')
+    monkeypatch.setattr(engine, 'check_signatures', lambda p: {'firmas': [{
+        'numero': 1, 'estado': 'Válida', 'firmante': 'Danny Patricio Bermeo Ochoa',
+        'fecha_reportada': '2026-01-01T12:00:00', 'sello_tiempo': 'Confiable'
+    }], 'firmas_cantidad': 1})
+    row = engine.inspect_file(path)
+    assert row['fecha_documento'] == '2026-08-05'
+    assert row['estado'] == 'Revisar'
+    assert any('anterior' in x for x in row['observaciones'])
+
+
+def test_signed_without_trusted_timestamp_needs_review(tmp_path, monkeypatch):
+    name = 'UGPA-RGI1-01-PRO-251-2026-07-Danny Patricio Bermeo Ochoa.pdf'
+    path = tmp_path / name
+    _pdf(path, 'Docente: Danny Patricio Bermeo Ochoa\nFecha de elaboracion: 05/08/2026')
+    monkeypatch.setattr(engine, 'check_signatures', lambda p: {'firmas': [{
+        'numero': 1, 'estado': 'Válida', 'firmante': 'Danny Patricio Bermeo Ochoa',
+        'fecha_reportada': '2026-08-05T12:00:00', 'sello_tiempo': 'No verificado'
+    }], 'firmas_cantidad': 1})
+    row = engine.inspect_file(path)
+    assert row['estado'] == 'Revisar'
+    assert any('sin sello de tiempo confiable' in x for x in row['observaciones'])
